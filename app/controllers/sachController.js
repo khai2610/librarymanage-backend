@@ -76,7 +76,22 @@ const updateSach = async (req, res) => {
   }
 };
 
+// Lấy thông tin sách theo MaSach
+const getSachById = async (req, res, next) => {
+  try {
+    const db = getDb();
+    const MaSach = req.params.MaSach;  // Lấy MaSach từ tham số URL
+    const book = await db.collection('Sach').findOne({ MaSach });
 
+    if (!book) {
+      return res.status(404).json({ message: 'Sách không tồn tại!' });
+    }
+
+    res.status(200).json(book);
+  } catch (error) {
+    next(error);
+  }
+};
 
 // Xóa sách
 const deleteSach = async (req, res) => {
@@ -102,4 +117,5 @@ module.exports = {
   getAllSach,
   updateSach,
   deleteSach,
+  getSachById
 };

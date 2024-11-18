@@ -1,11 +1,17 @@
 const express = require('express');
 const router = express.Router();
-const { createNhaXuatBan, getAllNhaXuatBan } = require('../controllers/nhaXuatBanController');
+const { 
+    updateNhaXuatBan, 
+    deleteNhaXuatBan,
+    getNhaXuatBanById,
+    createNhaXuatBan, 
+    getAllNhaXuatBan 
+} = require('../controllers/nhaXuatBanController');
 
-// Route lấy danh sách nhà xuất bản
 router.get('/', getAllNhaXuatBan);
-
-// Route tạo mới nhà xuất bản
 router.post('/', createNhaXuatBan);
+router.get('/:MaNXB', getNhaXuatBanById);
+router.put('/:MaNXB', updateNhaXuatBan);
+router.delete('/:MaNXB', deleteNhaXuatBan);
 
 module.exports = router;
