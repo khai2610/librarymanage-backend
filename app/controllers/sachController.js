@@ -44,35 +44,30 @@ const getAllSach = async (req, res) => {
 // Cập nhật thông tin sách
 const updateSach = async (req, res) => {
   try {
-    const db = getDb();
-    const { MaSach } = req.params;
-    const updateFields = req.body;
+    const { MaSach } = req.params; // Lấy mã sách từ URL
+    const updateData = req.body; // Dữ liệu gửi từ frontend
 
-    // Kiểm tra nếu không có thông tin cần cập nhật
-    if (!updateFields || Object.keys(updateFields).length === 0) {
-      return res.status(400).json({ message: 'Không có thông tin cập nhật!' });
+    console.log("Updating book:", MaSach, updateData); // Log dữ liệu nhận được
+
+    // Kiểm tra nếu không có dữ liệu
+    if (!updateData || Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No data provided for update." });
     }
 
-    // Tìm tài liệu trước khi cập nhật
-    const sach = await db.collection('Sach').findOne({ MaSach });
-
-    // Nếu không tìm thấy sách
-    if (!sach) {
-      return res.status(404).json({ message: 'Không tìm thấy sách với mã này!' });
-    }
-
-    // Cập nhật tài liệu
-    await db.collection('Sach').updateOne(
-      { MaSach }, // Điều kiện tìm kiếm
-      { $set: updateFields } // Dữ liệu cần cập nhật
+    const db = getDb(); // Kết nối MongoDB
+    const result = await db.collection("Sach").updateOne(
+      { MaSach },
+      { $set: updateData }
     );
 
-    // Lấy tài liệu đã được cập nhật
-    const updatedSach = await db.collection('Sach').findOne({ MaSach });
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Book not found." });
+    }
 
-    res.status(200).json(updatedSach); // Trả về tài liệu đã cập nhật
+    res.status(200).json({ message: "Book updated successfully." });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error updating book:", error);
+    res.status(500).json({ message: "Internal server error.", error });
   }
 };
 

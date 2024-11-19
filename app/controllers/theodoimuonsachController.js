@@ -38,11 +38,12 @@ const getAllMuonSach = async (req, res) => {
 const getMuonSachByDocGia = async (req, res) => {
   try {
     const db = getDb();
-    const { MaDocGia } = req.params;
+    const { MaDocGia, MaSach } = req.params;
 
-    const muonSach = await db.collection('TheoDoiMuonSach').find({ MaDocGia }).toArray();
+    // Tìm phiếu mượn sách theo MaDocGia và MaSach
+    const muonSach = await db.collection('TheoDoiMuonSach').findOne({ MaDocGia, MaSach });
 
-    if (muonSach.length === 0) {
+    if (!muonSach) {
       return res.status(404).json({ message: 'Không tìm thấy phiếu mượn sách!' });
     }
 

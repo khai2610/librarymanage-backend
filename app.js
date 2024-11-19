@@ -2,8 +2,11 @@ const express = require('express');
 const routes = require('./app/routes'); // Kết nối tới file index.js trong thư mục routes
 const loggerMiddleware = require('./app/middlewares/loggerMiddleware');
 const authMiddleware = require('./app/middlewares/authMiddleware');
+const cors = require("cors");
 
 const app = express();
+
+app.use(cors());
 
 // Middleware
 app.use(express.json());

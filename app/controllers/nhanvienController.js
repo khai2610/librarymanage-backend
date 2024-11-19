@@ -7,9 +7,9 @@ const createNhanVien = async (req, res) => {
     const newNhanVien = req.body;
 
     // Kiểm tra đầu vào
-    if (!newNhanVien || !newNhanVien.MSNV || !newNhanVien.HoTenNV || !newNhanVien.Password) {
-      return res.status(400).json({ message: 'Thiếu thông tin nhân viên!' });
-    }
+    // if (!newNhanVien || !newNhanVien.msnv || !newNhanVien.HoTenNV || !newNhanVien.Password) {
+    //   return res.status(400).json({ message: 'Thiếu thông tin nhân viên!' });
+    // }
 
     // Thêm nhân viên vào cơ sở dữ liệu
     const result = await db.collection('NhanVien').insertOne(newNhanVien);
@@ -36,12 +36,12 @@ const getAllNhanVien = async (req, res) => {
   }
 };
 
-// Lấy thông tin một nhân viên theo MSNV
+// Lấy thông tin một nhân viên theo msnv
 const getNhanVienById = async (req, res) => {
   try {
     const db = getDb();
-    const { MSNV } = req.params;
-    const nhanvien = await db.collection('NhanVien').findOne({ MSNV });
+    const { msnv } = req.params;
+    const nhanvien = await db.collection('NhanVien').findOne({ msnv });
 
     if (!nhanvien) {
       return res.status(404).json({ message: 'Không tìm thấy nhân viên!' });
@@ -57,7 +57,7 @@ const getNhanVienById = async (req, res) => {
 const updateNhanVien = async (req, res) => {
   try {
     const db = getDb();
-    const { MSNV } = req.params;
+    const { msnv } = req.params;
     const updateFields = req.body;
 
     if (!updateFields || Object.keys(updateFields).length === 0) {
@@ -65,7 +65,7 @@ const updateNhanVien = async (req, res) => {
     }
 
     const result = await db.collection('NhanVien').updateOne(
-      { MSNV },
+      { msnv },
       { $set: updateFields }
     );
 
@@ -73,20 +73,26 @@ const updateNhanVien = async (req, res) => {
       return res.status(404).json({ message: 'Không tìm thấy nhân viên!' });
     }
 
-    const updatedNhanVien = await db.collection('NhanVien').findOne({ MSNV });
-    res.status(200).json(updatedNhanVien);
+    // Sau khi update thành công, chỉ gọi res.json một lần
+    const updatedNhanVien = await db.collection('NhanVien').findOne({ msnv });
+    return res.status(200).json(updatedNhanVien); // Đảm bảo chỉ gửi phản hồi một lần
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error updating employee:', error);
+    if (!res.headersSent) {
+      return res.status(500).json({ message: error.message }); // Đảm bảo không gửi phản hồi nhiều lần
+    }
   }
 };
+
 
 // Xóa nhân viên
 const deleteNhanVien = async (req, res) => {
   try {
     const db = getDb();
-    const { MSNV } = req.params;
+    const { msnv } = req.params;
 
-    const result = await db.collection('NhanVien').deleteOne({ MSNV });
+    const result = await db.collection('NhanVien').deleteOne({ msnv });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Không tìm thấy nhân viên!' });
